@@ -1,11 +1,13 @@
 package com.zhubibo.baby;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,7 +21,12 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.zhubibo.baby.module.SettingActivity;
 import com.zhubibo.baby.util.DateUtil;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -33,13 +40,19 @@ public class MainActivity extends AppCompatActivity
 
     private static final String birthdayStr = "2017-07-07";
     private static final String dateFormat = "yyyy-MM-dd";
+    private Date birthday;
 
     private MyVolumeReceiver mVolumeReceiver;
+
+    public static String TAG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        TAG = getClass().getSimpleName();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -137,14 +150,13 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.nav_setting) {
+            Intent settingIntent = new Intent(this, SettingActivity.class);
+            birthday = DateUtil.getDate(birthdayStr, dateFormat);
+            settingIntent.putExtra("birthday", birthday);
+            startActivity(new Intent(this, SettingActivity.class));
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

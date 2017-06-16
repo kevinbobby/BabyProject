@@ -1,5 +1,7 @@
 package com.zhubibo.baby.util;
 
+import android.util.Log;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,6 +13,34 @@ import java.util.Date;
 
 public class DateUtil {
 
+
+    /**
+     * 获取字符串的日期
+     * @param dateStr    指定日期
+     * @param dateFormat 指定日期的格式
+     * @return
+     */
+    public static Date getDate(String dateStr, String dateFormat) {
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        try {
+            return sdf.parse(dateStr);
+        } catch (ParseException e) {
+            Log.e("DateUtil", "转换日期异常：" + e);
+            return new Date();
+        }
+    }
+
+    /**
+     * 获取指定格式的日期字符串
+     * @param date       指定日期
+     * @param dateFormat 指定日期的格式
+     * @return
+     */
+    public static String getDateStr(Date date, String dateFormat) {
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        return sdf.format(date);
+    }
+
     /**
      * 计算当前日期和dueDateStr的相差天数
      * @param dateStr    指定日期
@@ -21,26 +51,12 @@ public class DateUtil {
 
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 
-        Date inputDate = new Date();
-
-        try {
-            inputDate = sdf.parse(dateStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(inputDate);
-        long inputTimeLong = calendar.getTimeInMillis();
+        Date inputDate = getDate(dateStr, dateFormat);
+        long inputTimeLong = inputDate.getTime();
 
         String nowDateStr = sdf.format(new Date());
-        Date nowDate = new Date();
-        try {
-            nowDate = sdf.parse(nowDateStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        calendar.setTime(nowDate);
-        long nowTimeLong = calendar.getTimeInMillis();
+        Date nowDate = getDate(nowDateStr, dateFormat);
+        long nowTimeLong = nowDate.getTime();
 
         return (int) ((inputTimeLong - nowTimeLong) / (1000 * 60 * 60 * 24));
     }
@@ -53,15 +69,7 @@ public class DateUtil {
      */
     public static boolean isBirthday(String dateStr, String dateFormat) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-
-        Date inputDate = new Date();
-
-        try {
-            inputDate = sdf.parse(dateStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        Date inputDate = getDate(dateStr, dateFormat);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(inputDate);
         int inputDay = calendar.get(Calendar.DAY_OF_MONTH);
@@ -82,15 +90,7 @@ public class DateUtil {
      */
     public static int getBirthday(String dateStr, String dateFormat) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-
-        Date inputDate = new Date();
-
-        try {
-            inputDate = sdf.parse(dateStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        Date inputDate = getDate(dateStr, dateFormat);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(inputDate);
         int inputYear = calendar.get(Calendar.YEAR);

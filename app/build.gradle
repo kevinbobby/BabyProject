@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "com.zhubibo.badyproject"
+        applicationId "com.zhubibo.bady"
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
@@ -59,7 +59,7 @@ android {
                     def outputFile = output.outputFile
                     if (outputFile != null && outputFile.name.endsWith('.apk')) {
                         //输出apk名称为com.zhubibo.baby_1.0.0.apk
-                        def fileName = "com.zhubibo.baby_${defaultConfig.versionName}.apk"
+                        def fileName = "${defaultConfig.applicationId}_${defaultConfig.versionName}.apk"
                         output.outputFile = new File(outputFile.parent, fileName)
                     }
                 }
