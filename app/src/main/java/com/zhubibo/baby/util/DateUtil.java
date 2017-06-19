@@ -42,20 +42,17 @@ public class DateUtil {
     }
 
     /**
-     * 计算当前日期和dueDateStr的相差天数
-     * @param dateStr    指定日期
-     * @param dateFormat 指定日期的格式
+     * 计算当前日期和inputDate的相差天数
+     * @param inputDate    指定日期
      * @return
      */
-    public static int calcDiffDay(String dateStr, String dateFormat) {
+    public static int calcDiffDay(Date inputDate) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-
-        Date inputDate = getDate(dateStr, dateFormat);
         long inputTimeLong = inputDate.getTime();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String nowDateStr = sdf.format(new Date());
-        Date nowDate = getDate(nowDateStr, dateFormat);
+        Date nowDate = getDate(nowDateStr, "yyyy-MM-dd");
         long nowTimeLong = nowDate.getTime();
 
         return (int) ((inputTimeLong - nowTimeLong) / (1000 * 60 * 60 * 24));
@@ -63,13 +60,11 @@ public class DateUtil {
 
     /**
      * 计算今天是否是生日
-     * @param dateStr    指定日期
-     * @param dateFormat 指定日期的格式
+     * @param inputDate    指定日期
      * @return
      */
-    public static boolean isBirthday(String dateStr, String dateFormat) {
+    public static boolean isBirthday(Date inputDate) {
 
-        Date inputDate = getDate(dateStr, dateFormat);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(inputDate);
         int inputDay = calendar.get(Calendar.DAY_OF_MONTH);
@@ -84,13 +79,11 @@ public class DateUtil {
 
     /**
      * 获取生日岁数
-     * @param dateStr    指定日期
-     * @param dateFormat 指定日期的格式
+     * @param inputDate    指定日期
      * @return
      */
-    public static int getBirthday(String dateStr, String dateFormat) {
+    public static int getBirthday(Date inputDate) {
 
-        Date inputDate = getDate(dateStr, dateFormat);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(inputDate);
         int inputYear = calendar.get(Calendar.YEAR);

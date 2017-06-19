@@ -6,10 +6,8 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -24,8 +23,6 @@ import android.widget.TextView;
 import com.zhubibo.baby.module.SettingActivity;
 import com.zhubibo.baby.util.DateUtil;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
@@ -41,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     private static final String birthdayStr = "2017-07-07";
     private static final String dateFormat = "yyyy-MM-dd";
     private Date birthday;
+    private String babyName;
 
     private MyVolumeReceiver mVolumeReceiver;
 
@@ -88,6 +86,8 @@ public class MainActivity extends AppCompatActivity
         updateVolume();
 
         // 倒计时部分
+        init();
+
         nameTv = (TextView) findViewById(R.id.nameTv);
         dayTv = (TextView) findViewById(R.id.dayTv);
         tv1 = (TextView) findViewById(R.id.tv1);
@@ -96,6 +96,11 @@ public class MainActivity extends AppCompatActivity
         birthdayIv = (ImageView) findViewById(R.id.birthdayIv);
 
         updateDayArea();
+    }
+
+    private void init() {
+        birthday = DateUtil.getDate(birthdayStr, dateFormat);
+        babyName = getString(R.string.app_name);
     }
 
     @Override
@@ -154,9 +159,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_setting) {
             Intent settingIntent = new Intent(this, SettingActivity.class);
-            birthday = DateUtil.getDate(birthdayStr, dateFormat);
             settingIntent.putExtra("birthday", birthday);
-            startActivity(new Intent(this, SettingActivity.class));
+            settingIntent.putExtra("baby_name", babyName);
+            startActivityForResult(settingIntent, Constants.REQUEST_CODE_MAIN_TO_SETTING);
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -166,6 +171,18 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_CODE_MAIN_TO_SETTING) {
+            if (resultCode == RESULT_OK) {
+                birthday = (Date) data.getSerializableExtra("birthday");
+                babyName = data.getStringExtra("baby_name");
+                updateDayArea();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -241,17 +258,18 @@ public class MainActivity extends AppCompatActivity
      * 更新日期
      */
     private void updateDayArea() {
+        nameTv.setText(babyName);
 
-        int diffDay = DateUtil.calcDiffDay(birthdayStr, dateFormat);
+        int diffDay = DateUtil.calcDiffDay(birthday);
 
         if (diffDay <= 0) {
-            boolean isBirthday = DateUtil.isBirthday(birthdayStr, dateFormat);
-            int birthday = DateUtil.getBirthday(birthdayStr, dateFormat);
+            boolean isBirthday = DateUtil.isBirthday(birthday);
+            int age = DateUtil.getBirthday(birthday);
 
-            if (isBirthday && birthday > 0) {
+            if (isBirthday && age > 0) {
                 tv1.setText("");
                 tv2.setText("今天");
-                dayTv.setText(birthday + "");
+                dayTv.setText(age + "");
                 tv3.setText("岁生日啦!");
                 birthdayIv.setVisibility(View.VISIBLE);
             } else {
