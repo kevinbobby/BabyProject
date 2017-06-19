@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.zhubibo.baby.module.SettingActivity;
 import com.zhubibo.baby.util.DateUtil;
+import com.zhubibo.baby.util.PreferenceUtil;
 
 import java.util.Date;
 
@@ -31,12 +32,12 @@ public class MainActivity extends AppCompatActivity
         MyVolumeReceiver.VolumeChangedActionCallback {
 
     private SeekBar ringBar, alarmBar, musicBar, callBar;
-    private TextView nameTv, dayTv, tv1, tv2, tv3;
+    private TextView nameTv, dayTv, tv1, tv2, tv3, navHeaderNameTv;
     private ImageView birthdayIv;
     private AudioManager audioManager;
 
-    private static final String birthdayStr = "2017-07-07";
     private static final String dateFormat = "yyyy-MM-dd";
+    private String birthdayStr = "2017-07-07";
     private Date birthday;
     private String babyName;
 
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navHeaderNameTv = (TextView) navigationView.getHeaderView(0).findViewById(R.id.navHeaderNameTv);
+        System.out.println(navHeaderNameTv != null);
 
         // 音量部分
         mVolumeReceiver = new MyVolumeReceiver();
@@ -99,8 +102,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void init() {
+        birthdayStr = (String) PreferenceUtil.getValue(PreferenceUtil.BIRTHDAY, birthdayStr);
         birthday = DateUtil.getDate(birthdayStr, dateFormat);
-        babyName = getString(R.string.app_name);
+        babyName = (String) PreferenceUtil.getValue(PreferenceUtil.BABY_NAME, getString(R.string.app_name));
     }
 
     @Override
@@ -179,6 +183,9 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 birthday = (Date) data.getSerializableExtra("birthday");
                 babyName = data.getStringExtra("baby_name");
+
+                PreferenceUtil.saveValue(PreferenceUtil.BIRTHDAY, DateUtil.getDateStr(birthday, dateFormat));
+                PreferenceUtil.saveValue(PreferenceUtil.BABY_NAME, babyName);
                 updateDayArea();
             }
         }
@@ -259,6 +266,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void updateDayArea() {
         nameTv.setText(babyName);
+        navHeaderNameTv.setText(babyName);
 
         int diffDay = DateUtil.calcDiffDay(birthday);
 

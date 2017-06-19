@@ -21,6 +21,7 @@
         android:id="@+id/imageView" />
 
     <TextView
+        android:id="@+id/navHeaderNameTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
@@ -32,7 +33,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="568169316@qq.com"
+        android:text="568169317@qq.com"
         android:textColor="@color/colorPrimaryDark" />
 
 </LinearLayout>
