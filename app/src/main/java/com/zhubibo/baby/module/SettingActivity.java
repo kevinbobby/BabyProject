@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -17,7 +18,6 @@ import android.widget.Toast;
 
 import com.zhubibo.baby.R;
 import com.zhubibo.baby.util.DateUtil;
-import com.zhubibo.baby.util.PreferenceUtil;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -30,9 +30,11 @@ public class SettingActivity extends AppCompatActivity {
 
     private Date birthday;
     private String babyName;
+    private boolean showVolumeSetting;
 
     private Toolbar toolbar;
     private TextView settingNameTv, settingBirthdayTv;
+    private SwitchCompat settingVolmeSwitch;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class SettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         toolbar.setTitle("设置");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,8 +53,11 @@ public class SettingActivity extends AppCompatActivity {
 
         birthday = (Date) getIntent().getSerializableExtra("birthday");
         babyName = getIntent().getStringExtra("baby_name");
+        showVolumeSetting = getIntent().getBooleanExtra("show_volume_setting", true);
 
         // 获取UI
+        settingVolmeSwitch = (SwitchCompat) findViewById(R.id.settingVolumeSwitch);
+        settingVolmeSwitch.setChecked(showVolumeSetting);
         settingNameTv = (TextView) findViewById(R.id.settingNameTv);
         settingNameTv.setText(babyName);
         settingBirthdayTv = (TextView) findViewById(R.id.settingBirthdayTv);
@@ -63,6 +69,7 @@ public class SettingActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra("birthday", birthday);
         intent.putExtra("baby_name", babyName);
+        intent.putExtra("show_volume_setting", showVolumeSetting);
         setResult(RESULT_OK, intent);
         super.finish();
     }
@@ -121,5 +128,9 @@ public class SettingActivity extends AppCompatActivity {
         calendar.add(Calendar.YEAR, 1);
         datePicker.setMaxDate(calendar.getTimeInMillis());
         dialog.show();
+    }
+
+    public void settingVolume(View view) {
+        showVolumeSetting = settingVolmeSwitch.isChecked();
     }
 }

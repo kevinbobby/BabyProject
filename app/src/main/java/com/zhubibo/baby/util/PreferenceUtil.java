@@ -18,6 +18,7 @@ public class PreferenceUtil {
     // 业务key开始
     public static final String BIRTHDAY = "birthday";
     public static final String BABY_NAME = "baby_name";
+    public static final String SHOW_VOLUME_SETTING = "show_volume_setting";
     // 业务key结束
 
     public static void init(Context context) {

@@ -13,8 +13,38 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
-        app:titleTextColor="@android:color/white"
-        app:navigationIcon="@drawable/toolbar_back"/>
+        app:navigationIcon="@drawable/ic_menu_back"
+        app:theme="@style/Theme.AppCompat.DayNight"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|left"
+            android:text="是否开启声音设置"
+            android:layout_alignParentLeft="true"/>
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/settingVolumeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:switchMinWidth="60dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:longClickable="false"
+            android:textOff="隐藏"
+            android:textOn="显示"
+            app:showText="true"
+            app:switchTextAppearance="@style/SwitchCompat.Text"
+            app:theme="@style/SwitchCompat.Control"
+            android:onClick="settingVolume" />
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

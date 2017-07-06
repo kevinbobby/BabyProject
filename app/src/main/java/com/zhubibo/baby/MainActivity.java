@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity
         SeekBar.OnSeekBarChangeListener,
         MyVolumeReceiver.VolumeChangedActionCallback {
 
+    private View volumeLayout;
     private SeekBar ringBar, alarmBar, musicBar, callBar;
     private TextView nameTv, dayTv, tv1, tv2, tv3, navHeaderNameTv;
     private ImageView birthdayIv;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity
     private String birthdayStr = "2017-07-07";
     private Date birthday;
     private String babyName;
+    private boolean showVolumeSetting;
 
     private MyVolumeReceiver mVolumeReceiver;
 
@@ -73,24 +75,42 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navHeaderNameTv = (TextView) navigationView.getHeaderView(0).findViewById(R.id.navHeaderNameTv);
-        System.out.println(navHeaderNameTv != null);
+
+        init();
 
         // 音量部分
         mVolumeReceiver = new MyVolumeReceiver();
         mVolumeReceiver.setCallback(this);
 
+        volumeLayout = findViewById(R.id.volumeLayout);
         ringBar = (SeekBar) findViewById(R.id.ringBar);
         alarmBar = (SeekBar) findViewById(R.id.alarmBar);
         musicBar = (SeekBar) findViewById(R.id.musicBar);
         callBar = (SeekBar) findViewById(R.id.callBar);
 
+        ringBar.setOnSeekBarChangeListener(this);
+        alarmBar.setOnSeekBarChangeListener(this);
+        musicBar.setOnSeekBarChangeListener(this);
+        callBar.setOnSeekBarChangeListener(this);
+
         // 获取当前音量
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        // 手机铃声
+        int ringMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
+        ringBar.setMax(ringMax);
+        // 闹钟
+        int alarmMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+        alarmBar.setMax(alarmMax);
+        // 媒体音量
+        int musicMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        musicBar.setMax(musicMax);
+        // 通话
+        int callMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL);
+        callBar.setMax(callMax);
+        // 更新声音设置部分
         updateVolume();
 
         // 倒计时部分
-        init();
-
         nameTv = (TextView) findViewById(R.id.nameTv);
         dayTv = (TextView) findViewById(R.id.dayTv);
         tv1 = (TextView) findViewById(R.id.tv1);
@@ -105,6 +125,7 @@ public class MainActivity extends AppCompatActivity
         birthdayStr = (String) PreferenceUtil.getValue(PreferenceUtil.BIRTHDAY, birthdayStr);
         birthday = DateUtil.getDate(birthdayStr, dateFormat);
         babyName = (String) PreferenceUtil.getValue(PreferenceUtil.BABY_NAME, getString(R.string.app_name));
+        showVolumeSetting = (boolean) PreferenceUtil.getValue(PreferenceUtil.SHOW_VOLUME_SETTING, true);
     }
 
     @Override
@@ -165,6 +186,7 @@ public class MainActivity extends AppCompatActivity
             Intent settingIntent = new Intent(this, SettingActivity.class);
             settingIntent.putExtra("birthday", birthday);
             settingIntent.putExtra("baby_name", babyName);
+            settingIntent.putExtra("show_volume_setting", showVolumeSetting);
             startActivityForResult(settingIntent, Constants.REQUEST_CODE_MAIN_TO_SETTING);
         } else if (id == R.id.nav_share) {
 
@@ -183,9 +205,12 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 birthday = (Date) data.getSerializableExtra("birthday");
                 babyName = data.getStringExtra("baby_name");
+                showVolumeSetting = data.getBooleanExtra("show_volume_setting", true);
 
                 PreferenceUtil.saveValue(PreferenceUtil.BIRTHDAY, DateUtil.getDateStr(birthday, dateFormat));
                 PreferenceUtil.saveValue(PreferenceUtil.BABY_NAME, babyName);
+                PreferenceUtil.saveValue(PreferenceUtil.SHOW_VOLUME_SETTING, showVolumeSetting);
+                updateVolume();
                 updateDayArea();
             }
         }
@@ -231,34 +256,24 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void updateVolume() {
-        // 手机铃声
-        int ringValue = audioManager.getStreamVolume(AudioManager.STREAM_RING);
-        int ringMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
-        // 闹钟
-        int alarmValue = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-        int alarmMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-        // 媒体音量
-        int musicValue = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        int musicMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        // 通话
-        int callValue = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
-        int callMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL);
 
-        ringBar.setMax(ringMax);
-        ringBar.setProgress(ringValue);
-        ringBar.setOnSeekBarChangeListener(this);
-
-        alarmBar.setMax(alarmMax);
-        alarmBar.setProgress(alarmValue);
-        alarmBar.setOnSeekBarChangeListener(this);
-
-        musicBar.setMax(musicMax);
-        musicBar.setProgress(musicValue);
-        musicBar.setOnSeekBarChangeListener(this);
-
-        callBar.setMax(callMax);
-        callBar.setProgress(callValue);
-        callBar.setOnSeekBarChangeListener(this);
+        if (showVolumeSetting) {
+            volumeLayout.setVisibility(View.VISIBLE);
+            // 手机铃声
+            int ringValue = audioManager.getStreamVolume(AudioManager.STREAM_RING);
+            ringBar.setProgress(ringValue);
+            // 闹钟
+            int alarmValue = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+            alarmBar.setProgress(alarmValue);
+            // 媒体音量
+            int musicValue = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            musicBar.setProgress(musicValue);
+            // 通话
+            int callValue = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
+            callBar.setProgress(callValue);
+        } else {
+            volumeLayout.setVisibility(View.GONE);
+        }
     }
 
     /**
